@@ -1,0 +1,600 @@
+import tkinter
+import pymysql
+from tkinter import *
+from PIL import ImageTk, Image
+from tkinter import messagebox
+from functools import partial
+
+
+
+con = pymysql.connect(host="localhost",
+                      user="root",
+                      password='Aditya@1508',
+                      database='library')
+
+cur = con.cursor()
+
+
+def bookRegister():
+    bid = bookInfo1.get()
+    title = bookInfo2.get()
+    author = bookInfo3.get()
+    status = bookInfo4.get()
+    genre = bookInfo5.get()
+    price = bookInfo6.get()
+    status = status.lower()
+
+
+    insertBooks = "insert into " + bookTable + " values('" + bid + "','" + title + "','" + author + "','" \
+                  + status + "','" + genre + "','" + price + "')"
+
+    try:
+        cur.execute(insertBooks)
+        con.commit()
+        messagebox.showinfo('Success', "Book added successfully")
+    except:
+        messagebox.showerror("Error", "Can't add data into Database")
+
+
+    root.destroy()
+
+
+def addBook():
+    global bookInfo1, bookInfo2, bookInfo3, bookInfo4, bookInfo5, bookInfo6, Canvas1, con, cur, bookTable, root
+
+    root = Tk()
+    root.title("Library")
+    root.minsize(width=400, height=400)
+    root.geometry("600x500")
+
+    con = pymysql.connect(host="localhost", user="root", password='Aditya@1508', database='library')
+    cur = con.cursor()
+
+    bookTable = "books"
+    Canvas1 = Canvas(root)
+
+    Canvas1.config(bg="#8B8378")
+    Canvas1.pack(expand=True, fill=BOTH)
+
+    headingFrame1 = Frame(root, bg="#FFBB00", bd=5)
+    headingFrame1.place(relx=0.25, rely=0.1, relwidth=0.5, relheight=0.13)
+
+    headingLabel = Label(headingFrame1, text="Add Books", bg='black', fg='white', font=('Georgia', 16))
+    headingLabel.place(relx=0, rely=0, relwidth=1, relheight=1)
+
+    labelFrame = Frame(root, bg='black')
+    labelFrame.place(relx=0.1, rely=0.28, relwidth=0.8, relheight=0.6)
+
+
+    # Book ID
+    lb1 = Label(labelFrame, text="Book ID : ", bg='black', fg='white',font=('Arial', 10))
+    lb1.place(relx=0.05, rely=0.1, relheight=0.08)
+
+    bookInfo1 = Entry(labelFrame)
+    bookInfo1.place(relx=0.3, rely=0.1, relwidth=0.62, relheight=0.08)
+
+    # Title
+    lb2 = Label(labelFrame, text="Title : ", bg='black', fg='white',font=('Arial', 10))
+    lb2.place(relx=0.05, rely=0.25, relheight=0.08)
+
+    bookInfo2 = Entry(labelFrame)
+    bookInfo2.place(relx=0.3, rely=0.25, relwidth=0.62, relheight=0.08)
+
+    # Book Author
+    lb3 = Label(labelFrame, text="Author : ", bg='black', fg='white',font=('Arial', 10))
+    lb3.place(relx=0.05, rely=0.4, relheight=0.08)
+
+    bookInfo3 = Entry(labelFrame)
+    bookInfo3.place(relx=0.3, rely=0.4, relwidth=0.62, relheight=0.08)
+
+    # Book Status
+    lb4 = Label(labelFrame, text="Status(Avail/issued) : ", bg='black', fg='white',font=('Arial', 9))
+    lb4.place(relx=0.05, rely=0.55, relheight=0.08)
+
+    bookInfo4 = Entry(labelFrame)
+    bookInfo4.place(relx=0.3, rely=0.55, relwidth=0.62, relheight=0.08)
+
+    #Genre
+    lb5 = Label(labelFrame, text="Genre : ", bg='black', fg='white',font=('Arial', 9))
+    lb5.place(relx=0.05, rely=0.7, relheight=0.08)
+
+    bookInfo5 = Entry(labelFrame)
+    bookInfo5.place(relx=0.3, rely=0.7, relwidth=0.62, relheight=0.08)
+
+    #Price
+    lb6 = Label(labelFrame, text="Price : ", bg='black', fg='white',font=('Arial', 9))
+    lb6.place(relx=0.05, rely=0.85, relheight=0.08)
+
+    bookInfo6 = Entry(labelFrame)
+    bookInfo6.place(relx=0.3, rely=0.85, relwidth=0.62, relheight=0.08)
+
+
+    # Submit Button
+    SubmitBtn = Button(root, text="SUBMIT", bg='#d1ccc0', fg='black',font=('Arial', 10), command=bookRegister)
+    SubmitBtn.place(relx=0.28, rely=0.9, relwidth=0.18, relheight=0.08)
+
+    quitBtn = Button(root, text="QUIT", bg='#f7f1e3', fg='black',font=('Arial', 10), command=root.destroy)
+    quitBtn.place(relx=0.53, rely=0.9, relwidth=0.18, relheight=0.08)
+
+    root.mainloop()
+
+
+issueTable = "books_issued"
+bookTable = "books"
+
+
+def deleteBook():
+    bid = bookInfo1.get()
+
+    deleteSql = "delete from " + bookTable + " where bid = '" + bid + "'"
+    deleteIssue = "delete from " + issueTable + " where bid = '" + bid + "'"
+    try:
+        cur.execute(deleteSql)
+        con.commit()
+        cur.execute(deleteIssue)
+        con.commit()
+        messagebox.showinfo('Success', "Book Record Deleted Successfully")
+
+    except:
+        messagebox.showerror("Please check Book ID")
+
+    bookInfo1.delete(0, END)
+    root.destroy()
+
+
+def delete():
+    global bookInfo1, bookInfo2, bookInfo3, bookInfo4, Canvas1, con, cur, bookTable, root
+
+    root = Tk()
+    root.title("Library")
+    root.minsize(width=400, height=400)
+    root.geometry("600x500")
+
+    Canvas1 = Canvas(root)
+
+    Canvas1.config(bg="#698B69")
+    Canvas1.pack(expand=True, fill=BOTH)
+
+    headingFrame1 = Frame(root, bg="#FFBB00", bd=5)
+    headingFrame1.place(relx=0.25, rely=0.1, relwidth=0.5, relheight=0.13)
+
+    headingLabel = Label(headingFrame1, text="Delete Book", bg='black', fg='white', font=('Georgia', 16))
+    headingLabel.place(relx=0, rely=0, relwidth=1, relheight=1)
+
+    labelFrame = Frame(root, bg='black')
+    labelFrame.place(relx=0.1, rely=0.3, relwidth=0.8, relheight=0.5)
+
+    # Book ID to Delete
+    lb2 = Label(labelFrame, text="Book ID : ", bg='black', fg='white',font=('Arial', 10))
+    lb2.place(relx=0.05, rely=0.5)
+
+    bookInfo1 = Entry(labelFrame)
+    bookInfo1.place(relx=0.3, rely=0.5, relwidth=0.62)
+
+    # Submit Button
+    SubmitBtn = Button(root, text="SUBMIT", bg='#d1ccc0', fg='black',font=('Arial', 10), command=deleteBook)
+    SubmitBtn.place(relx=0.28, rely=0.9, relwidth=0.18, relheight=0.08)
+
+    quitBtn = Button(root, text="QUIT", bg='#f7f1e3', fg='black',font=('Arial', 10), command=root.destroy)
+    quitBtn.place(relx=0.53, rely=0.9, relwidth=0.18, relheight=0.08)
+
+    root.mainloop()
+
+
+allBid = []
+
+
+def issue():
+    global issueBtn, labelFrame, lb1, inf1, inf2, inf3, quitBtn, root, Canvas1, status
+
+    bid = inf1.get()
+    issueto = inf2.get()
+    bn_no = inf3.get()
+    date_issue = inf4.get()
+    date_return = inf5.get()
+
+
+
+    issueBtn.destroy()
+    labelFrame.destroy()
+    lb1.destroy()
+    inf1.destroy()
+    inf2.destroy()
+
+
+
+    extractBid = "select bid from " + bookTable
+    try:
+        cur.execute(extractBid)
+        con.commit()
+        for i in cur:
+            allBid.append(i[0])
+
+        if bid in allBid:
+            checkAvail = "select status from " + bookTable + " where bid = '" + bid + "'"
+            cur.execute(checkAvail)
+            con.commit()
+            for i in cur:
+                check = i[0]
+
+            if check == 'avail':
+                status = True
+            else:
+                status = False
+
+
+        else:
+            messagebox.showerror("Error", "Book ID not present")
+    except:
+        messagebox.showerror("Error", "Can't fetch Book IDs")
+
+    issueSql = "insert into " + issueTable + " values ('" + bid + "','" + issueto + "','" + bn_no + "','" + date_issue + "','" + date_return + "')"
+    show = "select * from " + issueTable
+
+    updateStatus = "update " + bookTable + " set status = 'issued' where bid = '" + bid + "'"
+    try:
+        if bid in allBid and status == True:
+            cur.execute(issueSql)
+            con.commit()
+            cur.execute(updateStatus)
+            con.commit()
+            messagebox.showinfo('Success', "Book Issued Successfully")
+            root.destroy()
+        else:
+            allBid.clear()
+            messagebox.showinfo('Message', "Book Already Issued")
+            root.destroy()
+            return
+    except:
+        messagebox.showerror("Search Error", "The value entered is wrong, Try again")
+        root.destroy()
+
+    allBid.clear()
+
+
+def issueBook():
+    global issueBtn, labelFrame, lb1, inf1, inf2, inf3, inf4, inf5, quitBtn, root, Canvas1, status
+
+    root = Tk()
+    root.title("Library")
+    root.minsize(width=400, height=400)
+    root.geometry("600x500")
+
+    Canvas1 = Canvas(root)
+    Canvas1.config(bg="#800000")
+    Canvas1.pack(expand=True, fill=BOTH)
+
+    headingFrame1 = Frame(root, bg="#FFBB00", bd=5)
+    headingFrame1.place(relx=0.25, rely=0.1, relwidth=0.5, relheight=0.13)
+
+    headingLabel = Label(headingFrame1, text="Issue Book", bg='black', fg='white', font=('Georgia', 16))
+    headingLabel.place(relx=0, rely=0, relwidth=1, relheight=1)
+
+    labelFrame = Frame(root, bg='black')
+    labelFrame.place(relx=0.1, rely=0.3, relwidth=0.8, relheight=0.5)
+
+    # Book ID
+    lb1 = Label(labelFrame, text="Book ID : ", bg='black', fg='white',font=('Arial', 10))
+    lb1.place(relx=0.05, rely=0.1)
+
+    inf1 = Entry(labelFrame)
+    inf1.place(relx=0.3, rely=0.1, relwidth=0.62)
+
+    # Issued To Student name
+    lb2 = Label(labelFrame, text="Issued To : ", bg='black', fg='white',font=('Arial', 10))
+    lb2.place(relx=0.05, rely=0.26)
+
+    inf2 = Entry(labelFrame)
+    inf2.place(relx=0.3, rely=0.26, relwidth=0.62)
+
+
+    # BN_NO
+    lb3 = Label(labelFrame, text="BN NO. : ", bg='black', fg='white', font=('Arial', 10))
+    lb3.place(relx=0.05, rely=0.42)
+
+    inf3 = Entry(labelFrame)
+    inf3.place(relx=0.3, rely=0.42, relwidth=0.62)
+
+
+    # Date_issue
+    lb4 = Label(labelFrame, text="Date of issue : ", bg='black', fg='white', font=('Arial', 10))
+    lb4.place(relx=0.05, rely=0.58)
+
+    inf4 = Entry(labelFrame)
+    inf4.place(relx=0.3, rely=0.58, relwidth=0.62)
+
+
+    # Date_return
+    lb5 = Label(labelFrame, text="Date of return : ", bg='black', fg='white', font=('Arial', 10))
+    lb5.place(relx=0.05, rely=0.74)
+
+    inf5 = Entry(labelFrame)
+    inf5.place(relx=0.3, rely=0.74, relwidth=0.62)
+
+
+    # Issue Button
+    issueBtn = Button(root, text="ISSUE", bg='#d1ccc0', fg='black',font=('Arial', 10), command=issue)
+    issueBtn.place(relx=0.28, rely=0.9, relwidth=0.18, relheight=0.08)
+
+    quitBtn = Button(root, text="QUIT", bg='#aaa69d', fg='black',font=('Arial', 10), command=root.destroy)
+    quitBtn.place(relx=0.53, rely=0.9, relwidth=0.18, relheight=0.08)
+
+    root.mainloop()
+
+
+allBid = []
+
+
+def returnn():
+    global SubmitBtn, labelFrame, lb1, bookInfo1, quitBtn, root, Canvas1, status
+
+
+
+    bid = bookInfo1.get()
+
+    extractBid = "select bid from " + issueTable
+    try:
+        cur.execute(extractBid)
+        con.commit()
+        for i in cur:
+            allBid.append(i[0])
+
+        if bid in allBid:
+            checkAvail = "select status from " + bookTable + " where bid = '" + bid + "'"
+            cur.execute(checkAvail)
+            con.commit()
+            for i in cur:
+                check = i[0]
+
+            if check == 'issued':
+                status = True
+            else:
+                status = False
+
+        else:
+            messagebox.showerror("Error", "Book ID not present")
+    except:
+        messagebox.showerror("Error", "Can't fetch Book IDs")
+
+    issueSql = "delete from " + issueTable + " where bid = '" + bid + "'"
+
+
+    updateStatus = "update " + bookTable + " set status = 'avail' where bid = '" + bid + "'"
+    try:
+        if bid in allBid and status == True:
+            cur.execute(issueSql)
+            con.commit()
+            cur.execute(updateStatus)
+            con.commit()
+            messagebox.showinfo('Success', "Book Returned Successfully")
+        else:
+            allBid.clear()
+            messagebox.showerror('Message', "Please check the book ID")
+            root.destroy()
+            return
+    except:
+        messagebox.showerror("Search Error", "The value entered is wrong, Try again")
+
+    allBid.clear()
+    root.destroy()
+
+
+def returnBook():
+
+    global bookInfo1, SubmitBtn, quitBtn, Canvas1, con, cur, root, labelFrame, lb1
+
+    root = Tk()
+    root.title("Library")
+    root.minsize(width=400, height=400)
+    root.geometry("600x500")
+
+    Canvas1 = Canvas(root)
+
+    Canvas1.config(bg="#2F4F4F")
+    Canvas1.pack(expand=True, fill=BOTH)
+
+    headingFrame1 = Frame(root, bg="#FFBB00", bd=5)
+    headingFrame1.place(relx=0.25, rely=0.1, relwidth=0.5, relheight=0.13)
+
+    headingLabel = Label(headingFrame1, text="Return Book", bg='black', fg='white', font=('Georgia', 16))
+    headingLabel.place(relx=0, rely=0, relwidth=1, relheight=1)
+
+    labelFrame = Frame(root, bg='black')
+    labelFrame.place(relx=0.1, rely=0.3, relwidth=0.8, relheight=0.5)
+
+    # Book ID to Delete
+    lb1 = Label(labelFrame, text="Book ID : ", bg='black', fg='white',font=('Arial', 10))
+    lb1.place(relx=0.05, rely=0.5)
+
+    bookInfo1 = Entry(labelFrame)
+    bookInfo1.place(relx=0.3, rely=0.5, relwidth=0.62)
+
+    # Submit Button
+    SubmitBtn = Button(root, text="SUMBIT", bg='#d1ccc0', fg='black',font=('Arial', 10), command=returnn)
+    SubmitBtn.place(relx=0.28, rely=0.9, relwidth=0.18, relheight=0.08)
+
+    quitBtn = Button(root, text="QUIT", bg='#f7f1e3', fg='black',font=('Arial', 10), command=root.destroy)
+    quitBtn.place(relx=0.53, rely=0.9, relwidth=0.18, relheight=0.08)
+
+    root.mainloop()
+
+
+
+def View():
+    root = Tk()
+    root.title("Library")
+    root.minsize(width=650, height=400)
+    root.geometry("600x500")
+
+    Canvas1 = Canvas(root)
+    Canvas1.config(bg="#696969")
+    Canvas1.pack(expand=True, fill=BOTH)
+
+    headingFrame1 = Frame(root, bg="#FFBB00", bd=5)
+    headingFrame1.place(relx=0.25, rely=0.1, relwidth=0.5, relheight=0.13)
+
+    headingLabel = Label(headingFrame1, text="View Books", bg='black', fg='white', font=('Georgia', 16))
+    headingLabel.place(relx=0, rely=0, relwidth=1, relheight=1)
+
+    labelFrame = Frame(root, bg='black')
+    labelFrame.place(relx=0.1, rely=0.3, relwidth=0.8, relheight=0.5)
+    y = 0.25
+
+    Label(labelFrame, text="%-10s%-20s%-21s%-20s%-20s%-20s" % ('BID', 'TITLE', 'AUTHOR', 'STATUS','GENRE','PRICE'), bg='black', fg='white',
+          font=('Georgia', 9)).place(relx=0.07, rely=0.1)
+    Label(labelFrame, text="--------------------------------------------------------------------------------------------",
+          bg='black',fg='white').place(relx=0.05, rely=0.2)
+
+    getBooks = "select * from " + bookTable
+    try:
+        cur.execute(getBooks)
+        con.commit()
+        for i in cur:
+            Label(labelFrame, text="%-10s%-20s%-25s%-24s%-26s%-30s" % (i[0], i[1], i[2], i[3], i[4], i[5]),
+                  bg='black', fg='white').place(relx=0.07, rely=y)
+            y += 0.1
+    except:
+        messagebox.showerror("Failed to fetch files from database")
+
+    quitBtn = Button(root, text="QUIT", bg='#f7f1e3', fg='black',font=('Arial', 10), command=root.destroy)
+    quitBtn.place(relx=0.4, rely=0.9, relwidth=0.18, relheight=0.08)
+
+    root.mainloop()
+
+
+def View_issue():
+    root = Tk()
+    root.title("Library")
+    root.minsize(width=650, height=400)
+    root.geometry("600x500")
+
+    Canvas1 = Canvas(root)
+    Canvas1.config(bg="#696969")
+    Canvas1.pack(expand=True, fill=BOTH)
+
+    headingFrame1 = Frame(root, bg="#FFBB00", bd=5)
+    headingFrame1.place(relx=0.25, rely=0.1, relwidth=0.5, relheight=0.13)
+
+    headingLabel = Label(headingFrame1, text="View Issued Books", bg='black', fg='white', font=('Georgia', 16))
+    headingLabel.place(relx=0, rely=0, relwidth=1, relheight=1)
+
+
+
+    labelFrame = Frame(root, bg='black')
+    labelFrame.place(relx=0.1, rely=0.3, relwidth=0.8, relheight=0.5)
+    y = 0.25
+
+
+
+    Label(labelFrame, text="%-8s%-14s%-18s%-30s%-40s" % ('BID','ISSUED TO','BN_NO','DATE OF ISSUE','DATE OF RETURN'), bg='black', fg='white',
+          font=('Georgia', 9)).place(relx=0.07, rely=0.1)
+    Label(labelFrame, text="---------------------------------------------------------------------------------------------",
+          bg='black',fg='white').place(relx=0.05, rely=0.2)
+    getBooks = "select * from " + issueTable
+    try:
+        cur.execute(getBooks)
+        con.commit()
+        for i in cur:
+            Label(labelFrame, text="%-10s%-20s%-30s%-40s%-20s" % (i[0], i[1],i[2],i[3],i[4]), bg='black', fg='white').place(
+                relx=0.07, rely=y)
+            y += 0.1
+    except:
+        messagebox.showerror("Failed to fetch files from database")
+
+    quitBtn = Button(root, text="QUIT", bg='#f7f1e3', fg='black',font=('Arial', 10), command=root.destroy)
+    quitBtn.place(relx=0.4, rely=0.9, relwidth=0.18, relheight=0.08)
+
+    root.mainloop()
+
+
+# Window
+tkWindow = Tk()
+tkWindow.geometry('340x200')
+tkWindow.title('Library database admin login')
+
+
+
+def login():
+    if username.get()=='aditya' and password.get() =='saraswat':
+        messagebox.showinfo(title='Login Success', message='Successfully Logged in!')
+        tkWindow.destroy()
+
+
+        root = Tk()
+        root.title("Library")
+        root.minsize(width=1000, height=700)
+        root.geometry("825x600")
+
+        same = True
+        n = 0.30
+
+        # Adding a background image
+        background_image = Image.open("C:/Users/aadi/OneDrive/Pictures/Screenshots/lib.jpg")
+        [imageSizeWidth, imageSizeHeight] = background_image.size
+
+        newImageSizeWidth = int(imageSizeWidth * n)
+        if same:
+            newImageSizeHeight = int(imageSizeHeight * n)
+        else:
+            newImageSizeHeight = int(imageSizeHeight / n)
+
+        background_image = background_image.resize((newImageSizeWidth, newImageSizeHeight))
+        img = ImageTk.PhotoImage(background_image)
+
+        Canvas1 = Canvas(root)
+
+        Canvas1.create_image(300, 340, image=img)
+        Canvas1.config(bg="white", width=newImageSizeWidth, height=newImageSizeHeight)
+        Canvas1.pack(expand=True, fill=BOTH)
+
+        headingFrame1 = Frame(root, bg="#FFBB00", bd=5)
+        headingFrame1.place(relx=0.2, rely=0.1, relwidth=0.6, relheight=0.16)
+
+        headingLabel = Label(headingFrame1, text="Welcome to \n The Python-Library  \n "
+                                                    "by: Aditya Saraswat",
+                                bg='black', fg='white', font=('Georgia', 17))
+        headingLabel.place(relx=0, rely=0, relwidth=1, relheight=1)
+
+        btn1 = Button(root, text="ADD BOOK DETAILS", bg='black', fg='white', font=('Times', 13), command=addBook)
+        btn1.place(relx=0.28, rely=0.3, relwidth=0.45, relheight=0.1)
+
+        btn2 = Button(root, text="DELETE BOOK", bg='black', fg='white', font=('Times', 13), command=delete)
+        btn2.place(relx=0.28, rely=0.4, relwidth=0.45, relheight=0.1)
+
+        btn3 = Button(root, text="VIEW BOOK LIST", bg='black', fg='white', font=('Times', 13), command=View)
+        btn3.place(relx=0.28, rely=0.5, relwidth=0.45, relheight=0.1)
+
+        btn4 = Button(root, text="ISSUE BOOK TO STUDENT", bg='black', fg='white', font=('Times', 13),
+                         command=issueBook)
+        btn4.place(relx=0.28, rely=0.6, relwidth=0.45, relheight=0.1)
+
+        btn5 = Button(root, text="RETURN BOOK", bg='black', fg='white', font=('Times', 13), command=returnBook)
+        btn5.place(relx=0.28, rely=0.7, relwidth=0.45, relheight=0.1)
+
+        btn6 = Button(root, text="VIEW ISSUED BOOK LIST", bg='black', fg='white', font=('Times', 13),
+                         command=View_issue)
+        btn6.place(relx=0.28, rely=0.8, relwidth=0.45, relheight=0.1)
+
+        root.mainloop()
+
+    elif username.get()=='' or password.get() =='':
+        messagebox.showwarning("Error","Please enter the username/password")
+    else:
+        messagebox.showerror("Error", "Wrong password/username")
+
+
+frame = tkinter.Frame()
+
+usernameLabel = tkinter.Label(frame, text="Username:",font=('Times',15)).grid(row=1, column=1)
+username = StringVar()
+usernameEntry = tkinter.Entry(frame, textvariable=username).grid(row=1, column=2)
+
+passwordLabel = tkinter.Label(frame, text="Password:",font=('Times',15)).grid(row=2, column=1)
+password = StringVar()
+passwordEntry = tkinter.Entry(frame, textvariable=password, show='*').grid(row=2, column=2)
+
+loginButton = tkinter.Button(frame, text="Login", bg="#A9A9A9", fg="black",font=('Times',13), command=login).grid(
+    row=4, column=1,pady=20)
+frame.grid()
+
+tkWindow.mainloop()
